@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InnoSaaS Design Guide Workspace</title>
+  <link rel="icon" type="image/png" href="./Res/FAVICON.png">
+  <link rel="apple-touch-icon" href="./Res/FAVICON.png">
+  <link rel="stylesheet" href="./design-guide.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-group">
+        <img class="brand-mark" src="./Res/FAVICON.png" alt="Innotium CI">
+        <div>
+          <p class="kicker">Design Workspace</p>
+          <h1>InnoSaaS Design Guide</h1>
+          <p class="topbar-copy">테넌트 관리 콘솔 시안과 AI 전달용 Markdown 규칙을 같은 화면에서 검토합니다.</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span class="status-pill">Commercial tone</span>
+        <span class="status-pill subtle">Light UI baseline</span>
+        <span class="status-pill accent">Review pass applied</span>
+      </div>
+    </header>
+
+    <div class="workspace-tabs" role="tablist" aria-label="Design guide mode">
+      <button class="workspace-tab is-active" type="button" role="tab" id="previewTab" aria-selected="true" aria-controls="previewPanel" data-tab-target="previewPanel">Design Guide (Preview)</button>
+      <button class="workspace-tab" type="button" role="tab" id="markdownTab" aria-selected="false" aria-controls="markdownPanel" data-tab-target="markdownPanel">Design Guide (Markdown for AI)</button>
+    </div>
+
+    <main class="workspace-panels">
+      <section class="workspace-panel is-active" id="previewPanel" role="tabpanel" aria-labelledby="previewTab">
+        <nav class="section-nav" aria-label="Preview sections">
+          <a href="#overview">Overview</a>
+          <a href="#review">Review Pass</a>
+          <a href="#tokens">Tokens</a>
+          <a href="#controls">Controls</a>
+          <a href="#extended">Extended</a>
+          <a href="#status">Status</a>
+          <a href="#interactions">Interactions</a>
+          <a href="#page">Base Page</a>
+        </nav>
+
+        <section class="hero-grid" id="overview">
+          <article class="hero-card">
+            <p class="kicker">Preview Baseline</p>
+            <h2>업무용 상용 프로그램처럼 차분하고 단정한 관리자 화면</h2>
+            <p class="hero-copy">
+              과한 그라데이션, 좌측 강조 바, 유행성 AI 스타일을 제거하고 여백, 경계선, 타이포 정렬로 완성도를 맞춘 시안입니다.
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" type="button">Primary Action</button>
+              <button class="btn btn-secondary" type="button">Secondary Action</button>
+              <button class="btn btn-neutral" type="button" data-open-tab="markdownPanel">Markdown 보기</button>
+            </div>
+            <div class="review-chip-row">
+              <span class="chip">44px touch target</span>
+              <span class="chip">Focus visibility</span>
+              <span class="chip">Reduced motion</span>
+              <span class="chip">Hierarchy cleanup</span>
+            </div>
+          </article>
+
+          <article class="dashboard-card">
+            <div class="panel-head">
+              <div>
+                <p class="panel-label">관리 콘솔 예시</p>
+                <h3>Tenant Overview</h3>
+              </div>
+              <span class="badge badge-success">Stable</span>
+            </div>
+            <div class="summary-grid">
+              <article class="summary-card">
+                <span class="summary-label">전체 테넌트</span>
+                <strong>128</strong>
+                <span class="summary-meta positive">+12 this month</span>
+              </article>
+              <article class="summary-card">
+                <span class="summary-label">활성 사용자</span>
+                <strong>7,482</strong>
+                <span class="summary-meta">realtime</span>
+              </article>
+              <article class="summary-card">
+                <span class="summary-label">월 구독 매출</span>
+                <strong>₩48.2M</strong>
+                <span class="summary-meta positive">+8.4%</span>
+              </article>
+            </div>
+          </article>
+        </section>
+
+        <section class="guide-section" id="review">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Review Pass</p>
+              <h2>외부 레퍼런스 검토 후 반영한 보완 항목</h2>
+            </div>
+            <p class="section-copy">전체 톤을 갈아엎지 않고, 현재 관리자 콘솔 기준선에 필요한 개선 포인트만 선별 반영했습니다.</p>
+          </div>
+          <div class="card-grid two-up">
+            <article class="surface-card review-card">
+              <h3>Interaction Safety</h3>
+              <ul class="rule-list">
+                <li>드롭다운 옵션과 주요 인터랙션 높이를 44px 기준으로 정리</li>
+                <li>키보드 포커스가 묻히지 않도록 focus ring 강화</li>
+                <li><code>prefers-reduced-motion</code> 대응 추가</li>
+              </ul>
+            </article>
+            <article class="surface-card review-card">
+              <h3>Hierarchy and Density</h3>
+              <ul class="rule-list">
+                <li>간격 토큰을 보강해 임의 padding 증가를 줄임</li>
+                <li>한 영역에 primary action 하나만 두는 기준 추가</li>
+                <li>카드 중첩과 저대비 회색 텍스트를 반패턴으로 명시</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="guide-section" id="tokens">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Tokens</p>
+              <h2>Color, Typography, Spacing</h2>
+            </div>
+            <p class="section-copy">채도 낮은 베이지-그레이, 얇은 보더, 8px 기반 간격 체계를 기준으로 사용합니다.</p>
+          </div>
+          <div class="card-grid three-up">
+            <article class="surface-card">
+              <h3>Core Colors</h3>
+              <div class="token-list">
+                <div><span class="swatch" style="background:#f5f3ef;"></span><strong>Page</strong><span>#F5F3EF</span></div>
+                <div><span class="swatch" style="background:#ffffff;"></span><strong>Surface</strong><span>#FFFFFF</span></div>
+                <div><span class="swatch" style="background:#ddd7cf;"></span><strong>Border</strong><span>#DDD7CF</span></div>
+                <div><span class="swatch" style="background:#2f2923;"></span><strong>Text</strong><span>#2F2923</span></div>
+              </div>
+            </article>
+            <article class="surface-card">
+              <h3>Typography</h3>
+              <div class="type-stack">
+                <p class="type-h1">Tenant Console Heading</p>
+                <p class="type-h2">Section Heading Example</p>
+                <p class="type-body">본문은 15px 기준, line-height 1.6, 카드 보조 텍스트는 13px로 운용합니다.</p>
+              </div>
+            </article>
+            <article class="surface-card">
+              <h3>Spacing</h3>
+              <ul class="rule-list">
+                <li>카드 기본 패딩 20px</li>
+                <li>라벨과 입력창 간격 8px</li>
+                <li>섹션 제목과 설명 간격 10px</li>
+                <li>요약 카드 메타 텍스트는 6px 이하</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="guide-section" id="controls">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Controls</p>
+              <h2>브라우저 기본 모양을 덮는 공통 폼 스타일</h2>
+            </div>
+            <p class="section-copy">드롭다운, 체크박스, 라디오, 입력 필드 모두 커스텀 CSS로 통일합니다.</p>
+          </div>
+          <div class="card-grid two-up">
+            <article class="surface-card">
+              <h3>Inputs and Select</h3>
+              <div class="form-grid">
+                <label class="field">
+                  <span class="field-label">Tenant Name</span>
+                  <input class="control" type="text" placeholder="예: Innotium Group">
+                </label>
+                <label class="field">
+                  <span class="field-label">Plan</span>
+                  <div class="custom-select" data-select>
+                    <button class="custom-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                      <span>Enterprise</span>
+                      <span class="custom-select-caret" aria-hidden="true"></span>
+                    </button>
+                    <div class="custom-select-menu" role="listbox" hidden>
+                      <button class="custom-select-option is-selected" type="button">Enterprise</button>
+                      <button class="custom-select-option" type="button">Pro</button>
+                      <button class="custom-select-option" type="button">Starter</button>
+                    </div>
+                  </div>
+                </label>
+                <label class="field field-full">
+                  <span class="field-label">Search</span>
+                  <div class="search-wrap">
+                    <span aria-hidden="true">⌕</span>
+                    <input class="control control-plain" type="search" placeholder="테넌트명, 관리자 이메일 검색">
+                  </div>
+                </label>
+                <label class="field field-full">
+                  <span class="field-label">Description</span>
+                  <textarea class="control control-textarea" rows="4" placeholder="테넌트 설명, 계약 메모"></textarea>
+                </label>
+              </div>
+            </article>
+            <article class="surface-card">
+              <h3>Selection Controls</h3>
+              <div class="selection-stack">
+                <label class="check-item">
+                  <input type="checkbox" checked>
+                  <span class="check-mark" aria-hidden="true"></span>
+                  <span class="check-copy"><strong>사용자 초대 허용</strong><small>관리자 콘솔에서 일반 사용자 초대를 허용합니다.</small></span>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox">
+                  <span class="check-mark" aria-hidden="true"></span>
+                  <span class="check-copy"><strong>자체 메일 연결 허용</strong><small>제품별 외부 메일 커넥터 사용을 허용합니다.</small></span>
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="plan-tier" checked>
+                  <span class="radio-mark" aria-hidden="true"></span>
+                  <span>Enterprise Plan</span>
+                </label>
+                <div class="switch-row">
+                  <div><strong>Tenant Active</strong><small>잠금 상태가 아닌 정상 운영 상태</small></div>
+                  <label class="switch"><input type="checkbox" checked><span class="switch-track" aria-hidden="true"></span></label>
+                </div>
+              </div>
+            </article>
+
+            <article class="surface-card">
+              <h3>States &amp; Variations</h3>
+              <div class="selection-stack">
+                <label class="check-item">
+                  <input type="checkbox" disabled>
+                  <span class="check-mark" aria-hidden="true"></span>
+                  <span class="check-copy"><strong>Disabled checkbox</strong><small>비활성 상태에서는 클릭할 수 없습니다.</small></span>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" checked disabled>
+                  <span class="check-mark" aria-hidden="true"></span>
+                  <span class="check-copy"><strong>Disabled + checked</strong><small>선택된 상태에서 잠겨 있습니다.</small></span>
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="noti-pref" value="all" checked>
+                  <span class="radio-mark" aria-hidden="true"></span>
+                  <span>모든 알림 수신</span>
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="noti-pref" value="important">
+                  <span class="radio-mark" aria-hidden="true"></span>
+                  <span>중요 알림만</span>
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="noti-pref" value="none">
+                  <span class="radio-mark" aria-hidden="true"></span>
+                  <span>알림 끄기</span>
+                </label>
+                <div class="switch-row">
+                  <div><strong>이메일 알림</strong><small>중요 이벤트 시 이메일로 알립니다.</small></div>
+                  <label class="switch"><input type="checkbox"><span class="switch-track" aria-hidden="true"></span></label>
+                </div>
+                <div class="switch-row">
+                  <div><strong>2단계 인증</strong><small>로그인 시 추가 인증을 요구합니다.</small></div>
+                  <label class="switch"><input type="checkbox" checked><span class="switch-track" aria-hidden="true"></span></label>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </section>
+
+
+        <section class="guide-section" id="extended">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Extended Components</p>
+              <h2>추가 UI 컴포넌트</h2>
+            </div>
+            <p class="section-copy">Tooltip, Tabs, Pagination, Breadcrumb, Alert, Skeleton 등 관리 콘솔에서 자주 필요한 패턴입니다.</p>
+          </div>
+          <div class="card-grid two-up">
+
+            <article class="surface-card">
+              <h3>Tooltip</h3>
+              <div style="display:flex; gap:24px; align-items:center; padding:20px 0;">
+                <span class="tooltip-wrap">
+                  <button class="btn btn-secondary" type="button">위에 표시</button>
+                  <span class="tooltip">도움말 텍스트입니다</span>
+                </span>
+                <span class="tooltip-wrap">
+                  <button class="btn btn-neutral" type="button">아래에 표시</button>
+                  <span class="tooltip tooltip-bottom">아래쪽 툴팁</span>
+                </span>
+              </div>
+            </article>
+
+            <article class="surface-card">
+              <h3>Tabs</h3>
+              <div class="tab-group">
+                <button class="tab-item is-active" type="button">일반 설정</button>
+                <button class="tab-item" type="button">보안</button>
+                <button class="tab-item" type="button">알림</button>
+                <button class="tab-item" type="button">연동</button>
+              </div>
+              <div style="padding:16px 0; color:var(--text-muted); font-size:14px;">탭 콘텐츠 영역</div>
+            </article>
+
+            <article class="surface-card">
+              <h3>Pagination</h3>
+              <nav class="pagination">
+                <button class="pagination-item" disabled>&lsaquo;</button>
+                <button class="pagination-item is-active">1</button>
+                <button class="pagination-item">2</button>
+                <button class="pagination-item">3</button>
+                <span class="pagination-ellipsis">&hellip;</span>
+                <button class="pagination-item">12</button>
+                <button class="pagination-item">&rsaquo;</button>
+              </nav>
+            </article>
+
+            <article class="surface-card">
+              <h3>Breadcrumb</h3>
+              <nav class="breadcrumb">
+                <a class="breadcrumb-item" href="#">관리</a>
+                <span class="breadcrumb-sep">/</span>
+                <a class="breadcrumb-item" href="#">앱 관리</a>
+                <span class="breadcrumb-sep">/</span>
+                <a class="breadcrumb-item" href="#">EAS</a>
+                <span class="breadcrumb-sep">/</span>
+                <span class="breadcrumb-item is-current">상태 관리</span>
+              </nav>
+            </article>
+
+            <article class="surface-card">
+              <h3>Alert / Inline Message</h3>
+              <div style="display:grid; gap:10px;">
+                <div class="alert alert-success">
+                  <span class="alert-icon">&#10003;</span>
+                  <div class="alert-content">
+                    <div class="alert-title">저장 완료</div>
+                    설정이 성공적으로 저장되었습니다.
+                  </div>
+                </div>
+                <div class="alert alert-warning">
+                  <span class="alert-icon">&#9888;</span>
+                  <div class="alert-content">
+                    <div class="alert-title">주의</div>
+                    SMTP 연결 테스트가 아직 완료되지 않았습니다.
+                  </div>
+                </div>
+                <div class="alert alert-error">
+                  <span class="alert-icon">&#10007;</span>
+                  <div class="alert-content">
+                    <div class="alert-title">오류</div>
+                    이메일 주소 형식이 올바르지 않습니다.
+                  </div>
+                </div>
+                <div class="alert alert-info">
+                  <span class="alert-icon">&#8505;</span>
+                  <div class="alert-content">
+                    <div class="alert-title">안내</div>
+                    변경사항은 다음 로그인부터 적용됩니다.
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="surface-card">
+              <h3>Skeleton / Loading</h3>
+              <div style="display:grid; gap:16px;">
+                <div style="display:flex; gap:12px; align-items:center;">
+                  <div class="skeleton skeleton-avatar"></div>
+                  <div style="flex:1;">
+                    <div class="skeleton skeleton-text" style="width:50%;"></div>
+                    <div class="skeleton skeleton-text" style="width:30%;"></div>
+                  </div>
+                </div>
+                <div class="skeleton skeleton-heading"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text" style="width:60%;"></div>
+              </div>
+            </article>
+
+          </div>
+        </section>
+        <section class="guide-section" id="status">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Status</p>
+              <h2>좌측 컬러 바를 쓰지 않는 상태 카드</h2>
+            </div>
+            <p class="section-copy">아이콘, 연한 배경색, 얇은 경계선으로 정보 강도만 남기고 AI풍 과장을 줄입니다.</p>
+          </div>
+          <div class="card-grid two-up">
+            <article class="surface-card">
+              <h3>Status Messages</h3>
+              <div class="status-stack">
+                <div class="status-panel status-info"><span class="status-icon">i</span><div class="status-copy"><strong>정보</strong><p>새 테넌트 생성 시 기본 관리자 계정이 자동 발급됩니다.</p></div></div>
+                <div class="status-panel status-success"><span class="status-icon">✓</span><div class="status-copy"><strong>성공</strong><p>브랜딩 설정이 저장되었고 미리보기에 반영되었습니다.</p></div></div>
+                <div class="status-panel status-warning"><span class="status-icon">!</span><div class="status-copy"><strong>주의</strong><p>결제 연체 7일 경과 시 읽기 전용 상태가 될 수 있습니다.</p></div></div>
+                <div class="status-panel status-error"><span class="status-icon">×</span><div class="status-copy"><strong>오류</strong><p>해당 서브도메인은 이미 사용 중입니다.</p></div></div>
+              </div>
+            </article>
+            <article class="surface-card">
+              <h3>Button and Badge</h3>
+              <div class="button-row">
+                <button class="btn btn-primary" type="button">저장</button>
+                <button class="btn btn-secondary" type="button">초대</button>
+                <button class="btn btn-neutral" type="button">미리보기</button>
+                <button class="btn btn-danger" type="button">비활성화</button>
+              </div>
+              <div class="badge-row">
+                <span class="badge">Draft</span>
+                <span class="badge badge-success">Active</span>
+                <span class="badge badge-warning">Pending</span>
+                <span class="badge badge-error">Suspended</span>
+                <span class="badge badge-info">Trial</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="guide-section" id="interactions">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Interactions</p>
+              <h2>Toast, Modal, Drawer 동작 예시</h2>
+            </div>
+            <p class="section-copy">단순 정적 시안이 아니라 실제 동작하는 인터랙션 톤도 같이 확인할 수 있어야 합니다.</p>
+          </div>
+          <div class="card-grid two-up">
+            <article class="surface-card">
+              <h3>Toast Preview</h3>
+              <p class="card-copy">저장 완료, 검증 실패, 임시저장 같은 짧은 피드백은 토스트로 확인합니다.</p>
+              <div class="button-row action-preview">
+                <button class="btn btn-secondary" type="button" data-toast="임시 저장되었습니다.">기본 토스트</button>
+                <button class="btn btn-primary" type="button" data-toast="테넌트 설정이 저장되었습니다.">성공 토스트</button>
+              </div>
+            </article>
+            <article class="surface-card">
+              <h3>Modal and Drawer</h3>
+              <p class="card-copy">확인 모달과 사이드 패널도 현재 톤에 맞는 얇은 보더와 낮은 대비로 유지합니다.</p>
+              <div class="button-row action-preview">
+                <button class="btn btn-secondary" type="button" id="openModal">확인 모달</button>
+                <button class="btn btn-neutral" type="button" id="openDrawer">사이드 패널</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="guide-section" id="page">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Base Page</p>
+              <h2>테넌트 관리 콘솔 기본 레이아웃</h2>
+            </div>
+            <p class="section-copy">리스트와 상세영역을 분리하고, 여백과 테이블 밀도를 실제 업무용 수준으로 맞춥니다.</p>
+          </div>
+          <div class="base-page">
+            <section class="base-pane">
+              <div class="pane-head">
+                <div><h3>Tenant List</h3><p>128개 테넌트</p></div>
+                <button class="btn btn-primary" type="button">신규 생성</button>
+              </div>
+              <div class="list-toolbar">
+                <div class="search-wrap compact"><span aria-hidden="true">⌕</span><input class="control control-plain" type="search" placeholder="검색"></div>
+                <div class="custom-select compact-select" data-select>
+                  <button class="custom-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                    <span>All Plans</span>
+                    <span class="custom-select-caret" aria-hidden="true"></span>
+                  </button>
+                  <div class="custom-select-menu" role="listbox" hidden>
+                    <button class="custom-select-option is-selected" type="button">All Plans</button>
+                    <button class="custom-select-option" type="button">Enterprise</button>
+                    <button class="custom-select-option" type="button">Pro</button>
+                  </div>
+                </div>
+              </div>
+              <div class="list-stack">
+                <button class="list-item is-selected" type="button"><strong>Innotium</strong><span>enterprise</span><em>Active</em></button>
+                <button class="list-item" type="button"><strong>Sakura Lab</strong><span>trial</span><em>Trial</em></button>
+                <button class="list-item" type="button"><strong>Bluefield</strong><span>starter</span><em>Pending</em></button>
+              </div>
+            </section>
+            <section class="base-pane">
+              <div class="pane-head">
+                <div><h3>Tenant Detail</h3><p>선택한 테넌트의 설정과 상태</p></div>
+                <div class="button-row"><button class="btn btn-secondary" type="button">초대</button><button class="btn btn-primary" type="button">저장</button></div>
+              </div>
+              <div class="form-grid">
+                <label class="field"><span class="field-label">Tenant Name</span><input class="control" type="text" value="Innotium"></label>
+                <label class="field">
+                  <span class="field-label">Plan</span>
+                  <div class="custom-select" data-select>
+                    <button class="custom-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                      <span>Enterprise</span>
+                      <span class="custom-select-caret" aria-hidden="true"></span>
+                    </button>
+                    <div class="custom-select-menu" role="listbox" hidden>
+                      <button class="custom-select-option is-selected" type="button">Enterprise</button>
+                      <button class="custom-select-option" type="button">Pro</button>
+                    </div>
+                  </div>
+                </label>
+                <label class="field field-full"><span class="field-label">Memo</span><textarea class="control control-textarea" rows="4">중요 고객. 조직도와 관리자 권한 체계를 먼저 확정해야 합니다.</textarea></label>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+
+      <section class="workspace-panel" id="markdownPanel" role="tabpanel" aria-labelledby="markdownTab" hidden>
+        <article class="markdown-panel">
+          <div class="section-head markdown-head">
+            <div>
+              <p class="kicker">Markdown for AI</p>
+              <h2>복사, 전달, 다운로드를 위한 기준 문서</h2>
+            </div>
+            <div class="button-row">
+              <button class="btn btn-secondary" type="button" id="copyMarkdown">Copy Markdown</button>
+              <button class="btn btn-neutral" type="button" id="copyPlainText">Copy Plain Text</button>
+              <button class="btn btn-primary" type="button" id="downloadMarkdown">Download .md</button>
+            </div>
+          </div>
+          <textarea class="markdown-textarea" id="markdownOutput" readonly spellcheck="false"></textarea>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="overlay" id="modalOverlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="dialog-head">
+        <div>
+          <p class="kicker">Modal Example</p>
+          <h3 id="modalTitle">테넌트 비활성화 확인</h3>
+        </div>
+        <button class="btn btn-neutral btn-compact" type="button" id="closeModal">닫기</button>
+      </div>
+      <p class="dialog-copy">선택한 테넌트를 비활성화하면 일반 사용자 로그인이 차단되고 관리자만 접근할 수 있습니다.</p>
+      <div class="dialog-actions">
+        <button class="btn btn-secondary" type="button" id="closeModalSecondary">취소</button>
+        <button class="btn btn-danger" type="button">비활성화</button>
+      </div>
+    </div>
+  </div>
+
+  <aside class="drawer" id="drawerPanel" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <p class="kicker">Drawer Example</p>
+        <h3>빠른 테넌트 생성</h3>
+      </div>
+      <button class="btn btn-neutral btn-compact" type="button" id="closeDrawer">닫기</button>
+    </div>
+    <div class="drawer-body">
+      <label class="field">
+        <span class="field-label">Tenant Name</span>
+        <input class="control" type="text" placeholder="예: New Venture">
+      </label>
+      <label class="field">
+        <span class="field-label">관리자 이메일</span>
+        <input class="control" type="email" placeholder="admin@example.com">
+      </label>
+      <label class="field">
+        <span class="field-label">Plan</span>
+        <div class="custom-select" data-select>
+          <button class="custom-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span>Starter</span>
+            <span class="custom-select-caret" aria-hidden="true"></span>
+          </button>
+          <div class="custom-select-menu" role="listbox" hidden>
+            <button class="custom-select-option is-selected" type="button">Starter</button>
+            <button class="custom-select-option" type="button">Pro</button>
+            <button class="custom-select-option" type="button">Enterprise</button>
+          </div>
+        </div>
+      </label>
+    </div>
+    <div class="drawer-actions">
+      <button class="btn btn-secondary" type="button" id="closeDrawerSecondary">취소</button>
+      <button class="btn btn-primary" type="button">생성</button>
+    </div>
+  </aside>
+
+  <script id="markdownSource" type="text/plain">
+# InnoSaaS Design Guide for AI
+
+## 1. Scope
+- Follow the current preview file in `03.DesignGuide/index.html`.
+- Do not invent a separate visual system before checking the existing structure.
+- The target is a commercial tenant admin console, not an AI showcase.
+- This guide was partially refined with reference to the review heuristics and anti-pattern language from `pbakaus/impeccable`.
+
+## 2. Preview Structure
+- Keep the preview sections in this order:
+  - `#overview`
+  - `#review`
+  - `#tokens`
+  - `#controls`
+  - `#status`
+  - `#interactions`
+  - `#page`
+- Keep the two top tabs:
+  - `Design Guide (Preview)`
+  - `Design Guide (Markdown for AI)`
+
+## 3. Layout Rules
+- Use white surfaces on a warm light background.
+- Use thin borders and restrained shadows.
+- Main layout blocks in this file are:
+  - `.hero-grid`
+  - `.card-grid`
+  - `.base-page`
+  - `.base-pane`
+- The tenant console layout must keep the left list area and right detail area.
+
+## 4. Typography Rules
+- H1 must render cleanly on Windows Korean browsers.
+- Use the current font stack priority:
+  - `"Segoe UI Variable Display"`
+  - `"Pretendard Variable"`
+  - `"Pretendard"`
+  - `"Apple SD Gothic Neo"`
+  - `"Malgun Gothic"`
+  - `sans-serif`
+- Do not make headings overly tight or heavy.
+
+## 5. Spacing Rules
+- Use 8px-based spacing logic.
+- Prefer semantic spacing tokens over arbitrary one-off values.
+- This file uses practical gaps such as `10`, `12`, `14`, `16`, `18`, `20`, `22`, `28`.
+- Text and controls must never feel glued together.
+- Buttons, badges, labels, and status blocks need visible breathing room.
+- Do not make every gap identical. Tight and generous spacing should both exist to build hierarchy.
+
+## 6. Form Control Rules
+- Do not expose browser-default control appearance as the final UI.
+- Inputs, search fields, and textareas must use the `.control` family.
+- Interactive controls should stay at or above a practical `44px` touch target.
+- All dropdowns must use the custom dropdown structure:
+  - `.custom-select`
+  - `.custom-select-trigger`
+  - `.custom-select-caret`
+  - `.custom-select-menu`
+  - `.custom-select-option`
+- Dropdown menus must stay folded by default.
+- Dropdown menus open only on click and close on outside click or `Escape`.
+
+## 7. Status Panel Rules
+- Status blocks must use:
+  - `.status-panel`
+  - `.status-icon`
+  - `.status-copy`
+- Do not use thick left accent bars.
+- Use low-saturation tint backgrounds and aligned icon boxes.
+
+## 8. Interaction Preview Rules
+- Keep working toast, modal, and drawer examples in the guide.
+- Toasts should be brief and lightweight.
+- Modals and drawers should follow the same border, spacing, and typography system.
+
+## 9. Button and Badge Rules
+- Buttons use `.btn` plus the state variants.
+- Badges use `.badge` plus state variants.
+- Do not pack controls too tightly.
+- Button text must not break awkwardly.
+- Within one local action area, keep one clear primary action and tone the rest down.
+
+## 10. Review Pass Rules
+- Keep a visible review pass area in the preview.
+- Show what was improved, not just the final polished result.
+- Good examples for this file:
+  - `44px` touch target baseline
+  - stronger focus visibility
+  - reduced motion handling
+  - hierarchy cleanup and anti-pattern removal
+
+## 11. Base Page Rules
+- The `#page` section is the main reference for future tenant console screens.
+- Left pane:
+  - heading
+  - search
+  - plan filter dropdown
+  - tenant list items
+- Right pane:
+  - heading
+  - action buttons
+  - form fields
+  - memo textarea
+
+## 12. Avoid List
+- Dark-first UI
+- Purple-led palette
+- Glassmorphism
+- Decorative gradient blobs
+- Oversized shadows
+- AI-like left accent alert bars
+- Over-compressed text and controls
+- Nested cards used only for hierarchy
+- Low-contrast gray text on tinted or decorative backgrounds
+
+## 13. Motion Rules
+- Keep motion restrained and functional.
+- Respect `prefers-reduced-motion`.
+- Avoid using animation as decoration when spacing or hierarchy can solve the problem.
+  </script>
+
+  <script src="./design-guide.js"></script>
+
+  <footer class="guide-footnote">
+    <p>
+      Reference note:
+      This guide was partially refined with reference to the review heuristics and anti-pattern language from
+      <a href="https://github.com/pbakaus/impeccable" target="_blank" rel="noreferrer">pbakaus/impeccable</a>.
+      Final visual decisions remain aligned to the InnoSaaS admin console baseline.
+    </p>
+  </footer>
+</body>
+</html>

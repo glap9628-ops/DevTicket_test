@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.innotium.devticket.domain.dashboard.repository.DashboardRepository">
+
+    <resultMap id="ticketSummaryResultMap" type="com.innotium.devticket.domain.ticket.dto.res.TicketSummaryRes">
+        <result property="id"            column="id"/>
+        <result property="ticketNo"      column="ticket_no"/>
+        <result property="ticketType"    column="ticket_type"/>
+        <result property="title"         column="title"/>
+        <result property="status"        column="status"/>
+        <result property="isUrgent"      column="is_urgent"/>
+        <result property="requesterName" column="requester_name"/>
+        <result property="assigneeName"  column="assignee_name"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="updatedAt"     column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="developerStatResultMap" type="com.innotium.devticket.domain.dashboard.dto.res.DeveloperStatRes">
+        <result property="assigneeId"       column="assignee_id"/>
+        <result property="assigneeName"     column="assignee_name"/>
+        <result property="inProgressCount"  column="in_progress_count"/>
+        <result property="doneCount"        column="done_count"/>
+    </resultMap>
+
+    <!-- ────────────────────────────────────────────────────────
+         상태별 티켓 수
+         year=0 / month=0 → 전체 기간
+    ──────────────────────────────────────────────────────────── -->
+    <select id="selectStatusCounts" parameterType="map" resultType="java.util.LinkedHashMap">
+        SELECT status, COUNT(*) AS cnt
+        FROM dts_tickets
+        WHERE 1 = 1
+          <if test="year > 0">
+              AND EXTRACT(YEAR  FROM created_at) = #{year}
+          </if>
+          <if test="month > 0">
+              AND EXTRACT(MONTH FROM created_at) = #{month}
+          </if>
+        GROUP BY status
+        ORDER BY status
+    </select>
+
+    <!-- ────────────────────────────────────────────────────────
+         유형별 티켓 수
+    ──────────────────────────────────────────────────────────── -->
+    <select id="selectTypeCounts" parameterType="map" resultType="java.util.LinkedHashMap">
+        SELECT ticket_type, COUNT(*) AS cnt
+        FROM dts_tickets
+        WHERE 1 = 1
+          <if test="year > 0">
+              AND EXTRACT(YEAR  FROM created_at) = #{year}
+          </if>
+          <if test="month > 0">
+              AND EXTRACT(MONTH FROM created_at) = #{month}
+          </if>
+        GROUP BY ticket_type
+        ORDER BY ticket_type
+    </select>
+
+    <!-- ────────────────────────────────────────────────────────
+         지연/미처리 티켓
+         · 월 필터 있음 → 해당 기간 대기·진행 티켓 전체
+         · 필터 없음   → 3일 이상 경과 대기·진행 티켓
+    ──────────────────────────────────────────────────────────── -->
+    <select id="selectDelayedTickets" parameterType="map" resultMap="ticketSummaryResultMap">
+        SELECT id, ticket_no, ticket_type, title, status,
+               is_urgent, requester_name, assignee_name, created_at, updated_at
+        FROM dts_tickets
+        WHERE status IN (1, 2)
+          <if test="year > 0">
+              AND EXTRACT(YEAR FROM created_at) = #{year}
+          </if>
+          <if test="month > 0">
+              AND EXTRACT(MONTH FROM created_at) = #{month}
+          </if>
+          <if test="year == 0 and month == 0">
+              AND created_at &lt; NOW() - INTERVAL '3 days'
+          </if>
+        ORDER BY is_urgent DESC, created_at ASC
+    </select>
+
+    <!-- ────────────────────────────────────────────────────────
+         제품별 티켓 수
+    ──────────────────────────────────────────────────────────── -->
+    <select id="selectProductCounts" parameterType="map" resultType="java.util.LinkedHashMap">
+        SELECT COALESCE(product_name, '미지정') AS product_name, COUNT(*) AS cnt
+        FROM dts_tickets
+        WHERE 1 = 1
+          <if test="year > 0">
+              AND EXTRACT(YEAR  FROM created_at) = #{year}
+          </if>
+          <if test="month > 0">
+              AND EXTRACT(MONTH FROM created_at) = #{month}
+          </if>
+        GROUP BY product_name
+        ORDER BY cnt DESC
+    </select>
+
+    <!-- ────────────────────────────────────────────────────────
+         개발자별 처리 현황
+         날짜 필터를 JOIN ON 조건에 걸어 집계 대상 티켓을 제한
+    ──────────────────────────────────────────────────────────── -->
+    <select id="selectDeveloperStats" parameterType="map" resultMap="developerStatResultMap">
+        SELECT
+            u.id           AS assignee_id,
+            u.display_name AS assignee_name,
+            COALESCE(SUM(CASE WHEN t.status IN (2, 3) THEN 1 ELSE 0 END), 0) AS in_progress_count,
+            COALESCE(SUM(CASE WHEN t.status = 4       THEN 1 ELSE 0 END), 0) AS done_count
+        FROM users u
+        LEFT JOIN dts_tickets t
+            ON  t.assignee_id = u.id
+            <if test="year > 0">
+                AND EXTRACT(YEAR  FROM t.created_at) = #{year}
+            </if>
+            <if test="month > 0">
+                AND EXTRACT(MONTH FROM t.created_at) = #{month}
+            </if>
+        WHERE u.group_id = 2
+          AND u.is_active = TRUE
+        GROUP BY u.id, u.display_name
+        ORDER BY in_progress_count DESC, done_count DESC
+    </select>
+
+</mapper>

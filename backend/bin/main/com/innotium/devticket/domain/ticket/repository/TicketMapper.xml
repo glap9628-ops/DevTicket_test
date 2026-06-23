@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.innotium.devticket.domain.ticket.repository.TicketRepository">
+
+    <resultMap id="ticketResultMap" type="com.innotium.devticket.domain.ticket.model.Ticket">
+        <id property="id" column="id"/>
+        <result property="ticketNo" column="ticket_no"/>
+        <result property="ticketType" column="ticket_type"/>
+        <result property="title" column="title"/>
+        <result property="status" column="status"/>
+        <result property="isUrgent" column="is_urgent"/>
+        <result property="productName" column="product_name"/>
+        <result property="requesterId" column="requester_id"/>
+        <result property="requesterName" column="requester_name"/>
+        <result property="assigneeId" column="assignee_id"/>
+        <result property="assigneeName" column="assignee_name"/>
+        <result property="extraFields" column="extra_fields"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="completedAt" column="completed_at"/>
+    </resultMap>
+
+    <resultMap id="ticketSummaryResultMap" type="com.innotium.devticket.domain.ticket.dto.res.TicketSummaryRes">
+        <result property="id" column="id"/>
+        <result property="ticketNo" column="ticket_no"/>
+        <result property="ticketType" column="ticket_type"/>
+        <result property="title" column="title"/>
+        <result property="status" column="status"/>
+        <result property="isUrgent" column="is_urgent"/>
+        <result property="productName" column="product_name"/>
+        <result property="requesterName" column="requester_name"/>
+        <result property="assigneeId" column="assignee_id"/>
+        <result property="assigneeName" column="assignee_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="ticketHistoryResultMap" type="com.innotium.devticket.domain.ticket.dto.res.TicketHistoryRes">
+        <result property="id" column="id"/>
+        <result property="fromStatus" column="from_status"/>
+        <result property="toStatus" column="to_status"/>
+        <result property="reason" column="reason"/>
+        <result property="changedByName" column="changed_by_name"/>
+        <result property="changedAt" column="changed_at"/>
+    </resultMap>
+
+    <select id="selectNextSeq" resultType="java.lang.Long">
+        SELECT nextval('dts_ticket_no_seq')
+    </select>
+
+    <insert id="insertTicket" parameterType="com.innotium.devticket.domain.ticket.model.Ticket"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dts_tickets (
+            ticket_no,
+            ticket_type,
+            title,
+            status,
+            is_urgent,
+            product_name,
+            requester_id,
+            requester_name,
+            extra_fields,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{ticketNo},
+            #{ticketType},
+            #{title},
+            #{status},
+            #{isUrgent},
+            #{productName},
+            #{requesterId},
+            #{requesterName},
+            #{extraFields}::jsonb,
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="ticketResultMap">
+        SELECT
+            id,
+            ticket_no,
+            ticket_type,
+            title,
+            status,
+            is_urgent,
+            product_name,
+            requester_id,
+            requester_name,
+            assignee_id,
+            assignee_name,
+            extra_fields::text AS extra_fields,
+            created_at,
+            updated_at,
+            completed_at
+        FROM dts_tickets
+        WHERE id = #{id}
+    </select>
+
+    <sql id="searchWhere">
+        <where>
+            <if test="ticketType != null">
+                AND ticket_type = #{ticketType}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="assigneeId != null">
+                AND assignee_id = #{assigneeId}
+            </if>
+            <if test="requesterId != null">
+                AND requester_id = #{requesterId}
+            </if>
+            <if test="isUrgent != null">
+                AND is_urgent = #{isUrgent}
+            </if>
+            <if test="dateFrom != null and dateFrom != ''">
+                AND created_at >= #{dateFrom}::date
+            </if>
+            <if test="dateTo != null and dateTo != ''">
+                AND created_at &lt; (#{dateTo}::date + INTERVAL '1 day')
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (title ILIKE '%' || #{keyword} || '%'
+                  OR ticket_no ILIKE '%' || #{keyword} || '%'
+                  OR requester_name ILIKE '%' || #{keyword} || '%'
+                  OR assignee_name ILIKE '%' || #{keyword} || '%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND product_name = #{productName}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectList" parameterType="com.innotium.devticket.domain.ticket.dto.req.TicketSearchReq"
+            resultMap="ticketSummaryResultMap">
+        SELECT
+            id,
+            ticket_no,
+            ticket_type,
+            title,
+            status,
+            is_urgent,
+            product_name,
+            requester_name,
+            assignee_id,
+            assignee_name,
+            created_at,
+            updated_at
+        FROM dts_tickets
+        <include refid="searchWhere"/>
+        ORDER BY is_urgent DESC, created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countList" parameterType="com.innotium.devticket.domain.ticket.dto.req.TicketSearchReq"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM dts_tickets
+        <include refid="searchWhere"/>
+    </select>
+
+    <update id="updateTicket">
+        UPDATE dts_tickets
+        SET
+            title        = #{title},
+            is_urgent    = #{isUrgent},
+            product_name = #{productName},
+            extra_fields = #{extraFields}::jsonb,
+            updated_at   = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateUrgent">
+        UPDATE dts_tickets
+        SET
+            is_urgent  = #{isUrgent},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE dts_tickets
+        SET
+            status = #{status},
+            updated_at = NOW()
+            <if test="assigneeId != null">, assignee_id = #{assigneeId}</if>
+            <if test="assigneeName != null">, assignee_name = #{assigneeName}</if>
+            <if test="completedAt != null">, completed_at = #{completedAt}</if>
+            <if test="completedAt == null and status != 4">, completed_at = NULL</if>
+        WHERE id = #{id}
+    </update>
+
+    <update id="clearAssignee">
+        UPDATE dts_tickets
+        SET
+            assignee_id   = NULL,
+            assignee_name = NULL,
+            updated_at    = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="cancelPickup">
+        UPDATE dts_tickets
+        SET
+            status       = 1,
+            assignee_id   = NULL,
+            assignee_name = NULL,
+            updated_at   = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectHistoryByTicketId" parameterType="java.lang.Long" resultMap="ticketHistoryResultMap">
+        SELECT
+            id,
+            from_status,
+            to_status,
+            reason,
+            changed_by_name,
+            changed_at
+        FROM dts_ticket_history
+        WHERE ticket_id = #{ticketId}
+        ORDER BY changed_at ASC
+    </select>
+
+    <insert id="insertHistory" parameterType="com.innotium.devticket.domain.ticket.model.TicketHistory"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dts_ticket_history (
+            ticket_id,
+            from_status,
+            to_status,
+            reason,
+            changed_by_id,
+            changed_by_name,
+            changed_at
+        ) VALUES (
+            #{ticketId},
+            #{fromStatus},
+            #{toStatus},
+            #{reason},
+            #{changedById},
+            #{changedByName},
+            NOW()
+        )
+    </insert>
+
+</mapper>

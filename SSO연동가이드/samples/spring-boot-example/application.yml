@@ -1,0 +1,12 @@
+# SSO 연동 설정 예제 — Spring Boot application.yml
+#
+# 환경변수 또는 secret-vault에서 주입하는 것을 권장합니다.
+#   export SSO_CLIENT_ID=sso-xxxxxxxx
+#   export SSO_CLIENT_SECRET=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
+sso:
+  base-url: ${SSO_BASE_URL:https://sso.innotium.com}
+  client-id: ${SSO_CLIENT_ID}
+  client-secret: ${SSO_CLIENT_SECRET}
+  # JWT 토큰 자동 갱신 버퍼 (만료 N초 전에 갱신)
+  token-refresh-buffer-seconds: 60

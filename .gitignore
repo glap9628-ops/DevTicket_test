@@ -1,0 +1,27 @@
+# Java
+backend/build/
+backend/.gradle/
+backend/out/
+*.class
+*.jar
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Python
+auth/__pycache__/
+auth/*.pyc
+auth/.venv/
+
+# Environment
+.env
+*.env
+
+# Data
+data/
+
+# IDE
+.idea/
+.vscode/
+*.iml

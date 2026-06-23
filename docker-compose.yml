@@ -1,0 +1,105 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devticket-net
+
+  flyway:
+    image: flyway/flyway:10-alpine
+    command: >
+      -url=jdbc:postgresql://db:5432/${DB_NAME}
+      -user=${DB_USER}
+      -password=${DB_PASSWORD}
+      -locations=filesystem:/flyway/sql
+      -baselineOnMigrate=true
+      -baselineVersion=1
+      migrate
+    volumes:
+      - ./backend/src/main/resources/db/migration:/flyway/sql:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - devticket-net
+
+  auth:
+    build: ./auth
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      SSO_BASE_URL: ${SSO_BASE_URL:-}
+      SSO_CLIENT_ID: ${SSO_CLIENT_ID:-}
+      SSO_CLIENT_SECRET: ${SSO_CLIENT_SECRET:-}
+    volumes:
+      - ./data/avatars:/app/data/avatars
+    depends_on:
+      db:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devticket-net
+
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      AUTH_SERVICE_URL: http://auth:8000
+      APP_AUTH_ENABLED: "true"
+      SPRING_FLYWAY_ENABLED: "false"
+    volumes:
+      - ./data/uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+    networks:
+      - devticket-net
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    networks:
+      - devticket-net
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "5173:80"
+    depends_on:
+      auth:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+    networks:
+      - devticket-net
+
+volumes:
+  pgdata:
+
+networks:
+  devticket-net:
+    driver: bridge

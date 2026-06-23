@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.innotium.devticket.domain.notification.repository.NotificationRepository">
+
+    <resultMap id="NotificationResMap" type="com.innotium.devticket.domain.notification.dto.NotificationRes">
+        <id     property="id"          column="id"/>
+        <result property="recipientId" column="recipient_id"/>
+        <result property="actorId"     column="actor_id"/>
+        <result property="actorName"   column="actor_name"/>
+        <result property="ticketId"    column="ticket_id"/>
+        <result property="type"        column="type"/>
+        <result property="message"     column="message"/>
+        <result property="read"        column="is_read"/>
+        <result property="createdAt"   column="created_at"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dts_notifications (recipient_id, actor_id, ticket_id, type, message, is_read, created_at)
+        VALUES (#{recipientId}, #{actorId}, #{ticketId}, #{type}, #{message}, false, NOW())
+    </insert>
+
+    <select id="findByRecipient" resultMap="NotificationResMap">
+        SELECT n.id, n.recipient_id, n.actor_id, u.display_name AS actor_name,
+               n.ticket_id, n.type, n.message, n.is_read, n.created_at
+        FROM dts_notifications n
+        LEFT JOIN users u ON u.id = n.actor_id
+        WHERE n.recipient_id = #{recipientId}
+        ORDER BY n.created_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="countUnread" resultType="int">
+        SELECT COUNT(*) FROM dts_notifications
+        WHERE recipient_id = #{recipientId} AND is_read = false
+    </select>
+
+    <update id="markRead">
+        UPDATE dts_notifications SET is_read = true
+        WHERE id = #{id} AND recipient_id = #{recipientId}
+    </update>
+
+    <update id="markAllRead">
+        UPDATE dts_notifications SET is_read = true
+        WHERE recipient_id = #{recipientId} AND is_read = false
+    </update>
+
+</mapper>

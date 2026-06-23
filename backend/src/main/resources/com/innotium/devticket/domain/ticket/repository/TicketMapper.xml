@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.innotium.devticket.domain.ticket.repository.TicketRepository">
+
+    <resultMap id="ticketResultMap" type="com.innotium.devticket.domain.ticket.model.Ticket">
+        <id property="id" column="id"/>
+        <result property="ticketNo"        column="ticket_no"/>
+        <result property="ticketType"      column="ticket_type"/>
+        <result property="title"           column="title"/>
+        <result property="status"          column="status"/>
+        <result property="isUrgent"        column="is_urgent"/>
+        <result property="productName"     column="product_name"/>
+        <result property="platform"        column="platform"/>
+        <result property="errorBug"        column="error_bug"/>
+        <result property="buildVersion"    column="build_version"/>
+        <result property="qaFilePath"      column="qa_file_path"/>
+        <result property="attachmentPath"  column="attachment_path"/>
+        <result property="requesterId"     column="requester_id"/>
+        <result property="requesterName"   column="requester_name"/>
+        <result property="assigneeId"      column="assignee_id"/>
+        <result property="assigneeName"    column="assignee_name"/>
+        <result property="extraFields"     column="extra_fields"/>
+        <result property="createdAt"       column="created_at"/>
+        <result property="updatedAt"       column="updated_at"/>
+        <result property="completedAt"     column="completed_at"/>
+        <!-- Phase 1 신규 필드 -->
+        <result property="requestedDueDate" column="requested_due_date"/>
+        <result property="desiredDueDate"   column="desired_due_date"/>
+        <result property="requestingDept"   column="requesting_dept"/>
+        <result property="difficulty"      column="difficulty"/>
+        <result property="expectedEffort"  column="expected_effort"/>
+        <result property="effortUnit"      column="effort_unit"/>
+        <result property="priority"        column="priority"/>
+        <result property="reviewedById"    column="reviewed_by_id"/>
+        <result property="reviewedByName"  column="reviewed_by_name"/>
+        <result property="reviewedAt"      column="reviewed_at"/>
+    </resultMap>
+
+    <resultMap id="ticketSummaryResultMap" type="com.innotium.devticket.domain.ticket.dto.res.TicketSummaryRes">
+        <result property="id"            column="id"/>
+        <result property="ticketNo"      column="ticket_no"/>
+        <result property="ticketType"    column="ticket_type"/>
+        <result property="title"         column="title"/>
+        <result property="status"        column="status"/>
+        <result property="isUrgent"      column="is_urgent"/>
+        <result property="productName"   column="product_name"/>
+        <result property="platform"      column="platform"/>
+        <result property="errorBug"      column="error_bug"/>
+        <result property="buildVersion"  column="build_version"/>
+        <result property="qaFilePath"       column="qa_file_path"/>
+        <result property="attachmentPath"   column="attachment_path"/>
+        <result property="requesterName"    column="requester_name"/>
+        <result property="assigneeId"    column="assignee_id"/>
+        <result property="assigneeName"  column="assignee_name"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="updatedAt"     column="updated_at"/>
+        <!-- Phase 1 신규 필드 (목록에서도 표시) -->
+        <result property="requestedDueDate" column="requested_due_date"/>
+        <result property="desiredDueDate"   column="desired_due_date"/>
+        <result property="requestingDept"   column="requesting_dept"/>
+        <result property="difficulty"      column="difficulty"/>
+        <result property="priority"        column="priority"/>
+        <result property="expectedEffort"  column="expected_effort"/>
+        <result property="effortUnit"      column="effort_unit"/>
+    </resultMap>
+
+    <resultMap id="ticketHistoryResultMap" type="com.innotium.devticket.domain.ticket.dto.res.TicketHistoryRes">
+        <result property="id"            column="id"/>
+        <result property="fromStatus"    column="from_status"/>
+        <result property="toStatus"      column="to_status"/>
+        <result property="reason"        column="reason"/>
+        <result property="changedByName" column="changed_by_name"/>
+        <result property="changedAt"     column="changed_at"/>
+    </resultMap>
+
+    <select id="selectNextSeq" resultType="java.lang.Long">
+        SELECT nextval('dts_ticket_no_seq')
+    </select>
+
+    <insert id="insertTicket" parameterType="com.innotium.devticket.domain.ticket.model.Ticket"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dts_tickets (
+            ticket_no,
+            ticket_type,
+            title,
+            status,
+            is_urgent,
+            product_name,
+            platform,
+            error_bug,
+            build_version,
+            qa_file_path,
+            attachment_path,
+            requester_id,
+            requester_name,
+            extra_fields,
+            requested_due_date,
+            requesting_dept,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{ticketNo},
+            #{ticketType},
+            #{title},
+            #{status},
+            #{isUrgent},
+            #{productName,      jdbcType=VARCHAR},
+            #{platform,         jdbcType=VARCHAR},
+            #{errorBug,         jdbcType=VARCHAR},
+            #{buildVersion,     jdbcType=VARCHAR},
+            #{qaFilePath,       jdbcType=VARCHAR},
+            #{attachmentPath,   jdbcType=VARCHAR},
+            #{requesterId},
+            #{requesterName},
+            CAST(#{extraFields, jdbcType=VARCHAR} AS jsonb),
+            #{requestedDueDate, jdbcType=DATE},
+            #{requestingDept,   jdbcType=VARCHAR},
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="ticketResultMap">
+        SELECT
+            id, ticket_no, ticket_type, title, status, is_urgent,
+            product_name, platform, error_bug, build_version, qa_file_path, attachment_path,
+            requester_id, requester_name, assignee_id, assignee_name,
+            extra_fields::text AS extra_fields,
+            created_at, updated_at, completed_at,
+            requested_due_date, desired_due_date, requesting_dept,
+            difficulty, expected_effort, effort_unit, priority,
+            reviewed_by_id, reviewed_by_name, reviewed_at
+        FROM dts_tickets
+        WHERE id = #{id}
+    </select>
+
+    <sql id="searchWhere">
+        <where>
+            <if test="ticketType != null">
+                AND ticket_type = #{ticketType}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="assigneeId != null">
+                AND assignee_id = #{assigneeId}
+            </if>
+            <if test="requesterId != null">
+                AND requester_id = #{requesterId}
+            </if>
+            <if test="isUrgent != null">
+                AND is_urgent = #{isUrgent}
+            </if>
+            <if test="dateFrom != null and dateFrom != ''">
+                AND created_at >= #{dateFrom}::date
+            </if>
+            <if test="dateTo != null and dateTo != ''">
+                AND created_at &lt; (#{dateTo}::date + INTERVAL '1 day')
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (title ILIKE '%' || #{keyword} || '%'
+                  OR ticket_no ILIKE '%' || #{keyword} || '%'
+                  OR requester_name ILIKE '%' || #{keyword} || '%'
+                  OR assignee_name ILIKE '%' || #{keyword} || '%'
+                  OR error_bug ILIKE '%' || #{keyword} || '%'
+                  OR build_version ILIKE '%' || #{keyword} || '%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND product_name = #{productName}
+            </if>
+            <if test="platform != null and platform != ''">
+                AND platform = #{platform}
+            </if>
+            <if test="buildVersion != null and buildVersion != ''">
+                AND build_version = #{buildVersion}
+            </if>
+            <if test="difficulty != null">
+                AND difficulty = #{difficulty}
+            </if>
+            <if test="priority != null">
+                AND priority = #{priority}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectList" parameterType="com.innotium.devticket.domain.ticket.dto.req.TicketSearchReq"
+            resultMap="ticketSummaryResultMap">
+        SELECT
+            id, ticket_no, ticket_type, title, status, is_urgent,
+            product_name, platform, error_bug, build_version, qa_file_path, attachment_path,
+            requester_name, assignee_id, assignee_name,
+            created_at, updated_at,
+            requested_due_date, desired_due_date, requesting_dept, difficulty, priority,
+            expected_effort, effort_unit
+        FROM dts_tickets
+        <include refid="searchWhere"/>
+        ORDER BY is_urgent DESC, created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countList" parameterType="com.innotium.devticket.domain.ticket.dto.req.TicketSearchReq"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM dts_tickets
+        <include refid="searchWhere"/>
+    </select>
+
+    <update id="updateTicket">
+        UPDATE dts_tickets
+        SET
+            title            = #{title},
+            is_urgent        = #{isUrgent},
+            product_name     = #{productName,     jdbcType=VARCHAR},
+            platform         = #{platform,        jdbcType=VARCHAR},
+            error_bug        = #{errorBug,        jdbcType=VARCHAR},
+            build_version    = #{buildVersion,    jdbcType=VARCHAR},
+            qa_file_path     = #{qaFilePath,      jdbcType=VARCHAR},
+            extra_fields     = CAST(#{extraFields, jdbcType=VARCHAR} AS jsonb),
+            requested_due_date = #{requestedDueDate, jdbcType=DATE},
+            requesting_dept    = #{requestingDept,   jdbcType=VARCHAR},
+            updated_at       = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateUrgent">
+        UPDATE dts_tickets
+        SET is_urgent  = #{isUrgent},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE dts_tickets
+        SET
+            status     = #{status},
+            updated_at = NOW()
+            <if test="assigneeId != null">, assignee_id   = #{assigneeId}</if>
+            <if test="assigneeName != null">, assignee_name = #{assigneeName}</if>
+            <if test="completedAt != null">, completed_at  = #{completedAt}</if>
+            <if test="completedAt == null and status != 6">, completed_at = NULL</if>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 관리자 검토: 평가 항목 + 상태 갱신 -->
+    <update id="updateReview">
+        UPDATE dts_tickets
+        SET
+            status           = #{status},
+            difficulty       = #{difficulty,      jdbcType=SMALLINT},
+            expected_effort  = #{expectedEffort,  jdbcType=NUMERIC},
+            effort_unit      = #{effortUnit,      jdbcType=VARCHAR},
+            priority         = #{priority,        jdbcType=SMALLINT},
+            reviewed_by_id   = #{reviewedById},
+            reviewed_by_name = #{reviewedByName},
+            reviewed_at      = NOW(),
+            updated_at       = NOW()
+            <if test="desiredDueDate != null">, desired_due_date = #{desiredDueDate}</if>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 관리자 담당자 지정: assignee만 교체. status != null이면 status도 갱신 -->
+    <update id="updateAssignee">
+        UPDATE dts_tickets
+        SET assignee_id   = #{assigneeId},
+            assignee_name = #{assigneeName},
+            updated_at    = NOW()
+            <if test="status != null">, status = #{status}</if>
+        WHERE id = #{id}
+    </update>
+
+    <update id="clearAssignee">
+        UPDATE dts_tickets
+        SET assignee_id   = NULL,
+            assignee_name = NULL,
+            updated_at    = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 티켓 삭제 시 히스토리 전체 삭제 -->
+    <delete id="deleteHistoryByTicketId" parameterType="java.lang.Long">
+        DELETE FROM dts_ticket_history WHERE ticket_id = #{id}
+    </delete>
+
+    <!-- 티켓 삭제 (관리자 전용) -->
+    <delete id="deleteTicket" parameterType="java.lang.Long">
+        DELETE FROM dts_tickets WHERE id = #{id}
+    </delete>
+
+    <!-- 픽업 취소: 진행가능(READY=3)으로 복귀 -->
+    <update id="cancelPickup">
+        UPDATE dts_tickets
+        SET status        = 3,
+            assignee_id   = NULL,
+            assignee_name = NULL,
+            updated_at    = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectHistoryByTicketId" parameterType="java.lang.Long" resultMap="ticketHistoryResultMap">
+        SELECT id, from_status, to_status, reason, changed_by_name, changed_at
+        FROM dts_ticket_history
+        WHERE ticket_id = #{ticketId}
+        ORDER BY changed_at ASC
+    </select>
+
+    <insert id="insertHistory" parameterType="com.innotium.devticket.domain.ticket.model.TicketHistory"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dts_ticket_history (
+            ticket_id, from_status, to_status, reason, changed_by_id, changed_by_name, changed_at
+        ) VALUES (
+            #{ticketId},
+            #{fromStatus,    jdbcType=INTEGER},
+            #{toStatus},
+            #{reason,        jdbcType=VARCHAR},
+            #{changedById},
+            #{changedByName},
+            NOW()
+        )
+    </insert>
+
+    <select id="findDuplicateId" resultType="java.lang.Long">
+        SELECT id FROM dts_tickets
+        WHERE ticket_type   = 1
+          AND build_version = #{buildVersion}
+          AND title         = #{title}
+        ORDER BY created_at DESC
+        LIMIT 1
+    </select>
+
+    <select id="findDevopsDuplicateByIncidentId" resultType="java.lang.Long">
+        SELECT id FROM dts_tickets
+        WHERE ticket_type = 2
+          AND extra_fields ->> 'incidentId' = #{incidentId}
+        ORDER BY created_at DESC
+        LIMIT 1
+    </select>
+
+</mapper>

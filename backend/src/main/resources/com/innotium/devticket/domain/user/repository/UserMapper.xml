@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.innotium.devticket.domain.user.repository.UserRepository">
+
+  <resultMap id="userSearchResMap" type="com.innotium.devticket.domain.user.dto.UserSearchRes">
+    <result property="userId"      column="user_id"/>
+    <result property="username"    column="username"/>
+    <result property="displayName" column="display_name"/>
+    <result property="groupName"   column="group_name"/>
+  </resultMap>
+
+  <!-- @멘션 파싱용: username으로 활성 사용자 ID 조회 -->
+  <select id="findActiveIdByUsername" resultType="java.lang.Long">
+    SELECT id FROM users
+    WHERE username = #{username} AND is_active = TRUE
+    LIMIT 1
+  </select>
+
+  <!-- 자동완성: username 또는 displayName ILIKE 검색 (최대 10건) -->
+  <select id="searchUsers" resultMap="userSearchResMap">
+    SELECT u.id AS user_id, u.username, u.display_name,
+           g.name AS group_name
+    FROM users u
+    LEFT JOIN groups g ON u.group_id = g.id
+    WHERE u.is_active = TRUE
+      AND (
+        u.username     ILIKE '%' || #{q} || '%'
+        OR u.display_name ILIKE '%' || #{q} || '%'
+      )
+    ORDER BY u.display_name ASC
+    LIMIT 10
+  </select>
+
+  <!-- 담당자 지정 드롭다운용: 개발자 그룹(group_id 1,2) 전체 활성 사용자 -->
+  <select id="findDeveloperUsers" resultMap="userSearchResMap">
+    SELECT u.id AS user_id, u.username, u.display_name,
+           g.name AS group_name
+    FROM users u
+    LEFT JOIN groups g ON u.group_id = g.id
+    WHERE u.is_active = TRUE
+      AND g.name LIKE '%기술연구소%'
+    ORDER BY u.display_name ASC
+  </select>
+
+  <!-- ID로 단일 사용자 조회 -->
+  <select id="findUserById" resultMap="userSearchResMap">
+    SELECT u.id AS user_id, u.username, u.display_name,
+           g.name AS group_name
+    FROM users u
+    LEFT JOIN groups g ON u.group_id = g.id
+    WHERE u.id = #{id} AND u.is_active = TRUE
+    LIMIT 1
+  </select>
+
+  <!-- 신규 티켓 알림 대상: 기술연구소팀 또는 관리자 중 활성 사용자 -->
+  <select id="findDeveloperIds" resultType="java.lang.Long">
+    SELECT u.id FROM users u
+    LEFT JOIN groups g ON g.id = u.group_id
+    LEFT JOIN roles r ON r.id = u.role_id
+    WHERE u.is_active = TRUE
+      AND (g.name LIKE '%기술연구소%' OR r.name = 'admin')
+  </select>
+
+  <!-- group_id로 그룹명 조회 (MeController에서 부서명 반환용) -->
+  <select id="findGroupNameByGroupId" resultType="java.lang.String">
+    SELECT name FROM groups WHERE id = #{groupId} LIMIT 1
+  </select>
+
+</mapper>
